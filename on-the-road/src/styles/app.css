@@ -1,0 +1,1367 @@
+/* =============== RESET & ROOT =============== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #0a0a0a;
+  color: #f9fafb;
+}
+
+/* Paletă principală – vestă fluorescentă mată */
+
+:root {
+  --hi-vis-yellow: #efff00; /* galben fluorescent */
+  --hi-vis-yellow-soft: #d6ec1a;
+  --hi-vis-stripe: #d9d9d9; /* bandă reflectorizantă argintie */
+  --bg-asphalt: #0a0a0a;
+  --bg-panel: #111111;
+  --bg-panel-soft: #171717;
+  --border-metal: #2a2a2a;
+  --border-metal-soft: #3a3a3a;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --status-overdue: #f97373;
+  --status-upcoming: #efff00;
+  --status-completed: #4ade80;
+  --status-canceled: #9ca3af;
+}
+
+/* =============== BACKGROUND =============== */
+
+.app-bg-animated {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: radial-gradient(circle at top, #111111 0, #050505 60%, #000 100%);
+}
+
+/* straturi foarte discrete, fără glow puternic */
+
+.app-orbit-layer {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(239, 255, 0, 0.07), transparent 55%),
+    radial-gradient(circle at 85% 15%, rgba(217, 217, 217, 0.12), transparent 55%),
+    radial-gradient(circle at 50% 100%, rgba(239, 255, 0, 0.09), transparent 60%);
+  opacity: 0.7;
+  filter: blur(5px);
+  animation: orbitSpin 60s linear infinite;
+  z-index: 0;
+}
+
+.app-orbit-layer-2 {
+  opacity: 0.4;
+  filter: blur(12px);
+  animation-duration: 90s;
+}
+
+.app-orbit-layer-3 {
+  opacity: 0.25;
+  filter: blur(18px);
+  animation-duration: 120s;
+}
+
+@keyframes orbitSpin {
+  from {
+    transform: rotate(0deg) scale(1.02);
+  }
+  to {
+    transform: rotate(360deg) scale(1.02);
+  }
+}
+
+/* =============== LAYOUT SHELL =============== */
+
+.app-shell-root {
+  position: relative;
+  z-index: 1;
+  width: min(1200px, 100%);
+  height: calc(100vh - 32px);  /* FIX */
+  min-height: 0;               /* FIX */
+  border-radius: 24px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-metal);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.85),
+    0 0 0 1px #000;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+/* =============== SIDEBAR =============== */
+
+.app-sidebar {
+  width: 250px;
+  background: #050505;
+  border-right: 1px solid var(--border-metal);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px;
+  transition: width 0.18s ease;
+}
+
+.app-sidebar-collapsed {
+  width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* buton pill cu bandă hi-vis */
+
+.sidebar-logo-pill {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-metal-soft);
+  padding: 6px 12px;
+  background: #1a1a1a;   /* MAT, industrial */
+  color: var(--text-main);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-logo-pill:hover {
+  background: #222;
+  border-color: var(--hi-vis-stripe);
+}
+
+
+.sidebar-logo-icon {
+  font-size: 1rem;
+}
+
+.sidebar-logo-text {
+  white-space: nowrap;
+}
+
+.sidebar-toggle-pill {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border-metal-soft);
+  background: #111111;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* nav pills */
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.nav-pill {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 7px 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    transform 0.1s ease;
+}
+
+.nav-pill:hover {
+  background: #111111;
+  border-color: var(--border-metal-soft);
+  transform: translateY(-1px);
+}
+
+.nav-pill-active {
+  background: #151515;
+  border-color: var(--hi-vis-yellow);
+  color: var(--text-main);
+}
+
+.nav-pill-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+  font-size: 1rem;
+}
+
+.nav-pill-label {
+  flex: 1;
+  text-align: left;
+}
+
+.nav-pill-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #151515;
+  border: 1px solid var(--hi-vis-stripe);
+  font-size: 0.7rem;
+}
+
+/* sidebar footer */
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #1f2933;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.sidebar-footer-title {
+  margin: 0 0 4px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.sidebar-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.sidebar-footer-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  border: 1px solid #3f3f3f;
+}
+
+.sidebar-footer-pill-upcoming {
+  background: #181818;
+  color: var(--hi-vis-yellow);
+}
+
+.sidebar-footer-pill-overdue {
+  background: #181818;
+  color: var(--status-overdue);
+}
+
+.sidebar-footer-pill-completed {
+  background: #181818;
+  color: var(--status-completed);
+}
+
+/* =============== MAIN COLUMN =============== */
+
+.app-main-column {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 14px;
+  gap: 10px;
+  flex: 1;           /* FIX */
+  min-height: 0;     /* FIX */
+}
+
+/* Topbar */
+
+.app-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 8px;
+  border-radius: 999px;
+  background: #111111;
+  border: 1px solid var(--border-metal-soft);
+}
+
+.topbar-left {
+  flex: 1;
+}
+
+.topbar-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-main);
+}
+
+.topbar-subtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+.topbar-pill-soft {
+  background: #151515;
+  border: 1px solid var(--hi-vis-stripe);
+  color: var(--text-main);
+}
+
+.topbar-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--hi-vis-yellow);
+}
+
+/* main content */
+
+.app-main-content {
+  flex: 1;
+  min-height: 0;
+  border-radius: 18px;
+  background: #101010;
+  border: 1px solid var(--border-metal-soft);
+  padding: 10px;
+  overflow: hidden;   /* ← OBLIGATORIU */
+  display: flex;
+  flex-direction: column;
+}
+.page-transition {
+  width: 100%;
+  height: 100%;
+  flex: 1;          /* 👈 ia toată înălțimea disponibilă */
+  min-height: 0;    /* 👈 permite scroll în copii */
+  animation: pageFadeSlide 0.22s ease-out;
+}
+
+@keyframes pageFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============== PAGINI & CARDURI =============== */
+
+.page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+  grid-auto-rows: minmax(0, auto);
+  gap: 10px;
+  height: 100%;
+}
+
+.page-two-column {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+  gap: 10px;
+  height: 100%;
+}
+
+.page-card {
+  position: relative;
+  border-radius: 14px;
+  background: var(--bg-panel-soft);
+  border: 1px solid var(--border-metal-soft);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page-card-primary {
+  border-top: 3px solid var(--hi-vis-yellow);
+}
+
+.page-card-secondary {
+  border-top: 3px solid var(--hi-vis-stripe);
+}
+
+.page-card-ghost {
+  border-style: dotted;
+}
+
+.page-card-calendar {
+  border-top: 3px solid var(--hi-vis-yellow);
+}
+
+.page-card-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hi-vis-stripe);
+}
+
+.page-card-header p {
+  margin: 2px 0 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* =============== HOME STATS =============== */
+
+.home-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.home-stat-card {
+  border-radius: 10px;
+  background: #151515;
+  border: 1px solid var(--border-metal-soft);
+  padding: 8px 9px;
+  font-size: 0.8rem;
+}
+
+.home-stat-label {
+  margin: 0;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+}
+
+.home-stat-value {
+  margin: 2px 0 0;
+  font-size: 1.1rem;
+  color: var(--hi-vis-yellow);
+}
+
+.home-stat-hint {
+  margin: 2px 0 0;
+  font-size: 0.73rem;
+  color: #6b7280;
+}
+
+.home-stat-upcoming {
+  border-color: var(--hi-vis-yellow);
+}
+
+.home-stat-overdue {
+  border-color: var(--status-overdue);
+}
+
+.home-stat-completed {
+  border-color: var(--status-completed);
+}
+
+/* mini-list */
+
+.home-mini-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.home-mini-item {
+  border-radius: 10px;
+  border: 1px solid var(--border-metal-soft);
+  padding: 7px 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  background: #151515;
+}
+
+.home-mini-title {
+  font-weight: 500;
+}
+
+.home-mini-description {
+  display: block;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.home-mini-tag {
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  background: #111111;
+  border: 1px solid var(--hi-vis-stripe);
+}
+
+.home-empty-block {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.home-task-preview {
+  margin-top: 6px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* =============== FORM UI =============== */
+
+.tf-form {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 8px 10px;
+}
+
+.tf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tf-field-full {
+  grid-column: 1 / -1;
+}
+
+.tf-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tf-label-pill {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  background: #1f2933;
+  color: var(--hi-vis-yellow);
+}
+
+.tf-input,
+.tf-textarea,
+.tf-select {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-metal-soft);
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  background: #151515;
+  color: var(--text-main);
+  outline: none;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease,
+    transform 0.1s ease;
+}
+
+.tf-textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.tf-input::placeholder,
+.tf-textarea::placeholder {
+  color: #6b7280;
+}
+
+.tf-input:focus,
+.tf-textarea:focus,
+.tf-select:focus {
+  border-color: var(--hi-vis-yellow);
+  background: #181818;
+  transform: translateY(-1px);
+}
+
+.tf-select-wrapper {
+  position: relative;
+}
+
+.tf-select {
+  appearance: none;
+  padding-right: 26px;
+}
+
+.tf-select-indicator {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.tf-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* =============== PILL BUTTONS =============== */
+
+.pill-button {
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 7px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.1s ease;
+}
+
+.pill-button-primary {
+  background: var(--hi-vis-yellow);
+  border-color: var(--hi-vis-stripe);
+  color: #111111;
+}
+
+.pill-button-primary:hover {
+  transform: translateY(-1px);
+  background: var(--hi-vis-yellow-soft);
+}
+
+.pill-button-primary:active {
+  transform: translateY(0);
+}
+
+.pill-button-danger-light {
+  background: #201010;
+  border-color: var(--status-overdue);
+  color: var(--status-overdue);
+}
+
+.pill-button-danger-light:hover {
+  background: #2a1313;
+}
+
+/* =============== TASK LIST & CARDS =============== */
+
+.tasks-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;       
+  min-height: 0;
+}
+
+
+.task-list-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.task-list-scroll::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 999px;
+}
+
+.task-card {
+  position: relative;
+  border-radius: 10px;
+  background: #151515;
+  border: 1px solid var(--border-metal-soft);
+  padding: 9px 10px 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: taskFadeUp 0.18s ease-out;
+}
+
+@keyframes taskFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* punct colorat în funcție de status */
+
+.task-card-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--hi-vis-yellow);
+}
+
+.task-card-overdue .task-card-dot {
+  background: var(--status-overdue);
+}
+
+.task-card-upcoming .task-card-dot {
+  background: var(--status-upcoming);
+}
+
+.task-card-completed .task-card-dot {
+  background: var(--status-completed);
+}
+
+.task-card-canceled .task-card-dot {
+  background: var(--status-canceled);
+}
+
+.task-card-title {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.task-card-description {
+  margin: 3px 0 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.task-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.76rem;
+}
+
+.task-card-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.task-card-meta-label {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.66rem;
+  color: #6b7280;
+}
+
+.task-card-meta-value {
+  color: var(--text-main);
+}
+
+.task-card-footer {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.task-card-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-card-select-wrapper {
+  position: relative;
+  width: 180px;
+  max-width: 100%;
+}
+
+.task-card-select {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--border-metal-soft);
+  padding: 6px 10px;
+  padding-right: 26px;
+  font-size: 0.78rem;
+  background: #151515;
+  color: var(--text-main);
+  appearance: none;
+}
+
+.task-card-select-indicator {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* Empty state */
+
+.task-empty-state {
+  margin-top: 8px;
+  padding: 24px 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-metal-soft);
+  background: #151515;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.task-empty-icon {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.task-empty-title {
+  margin: 0;
+  color: var(--text-main);
+}
+
+.task-empty-text {
+  margin: 2px 0 0;
+}
+
+/* =============== CALENDAR =============== */
+
+.page-card-calendar {
+  height: 100%;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendar-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-nav-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid var(--border-metal-soft);
+  background: #151515;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.calendar-nav-title {
+  font-size: 0.86rem;
+  color: var(--text-main);
+}
+
+.calendar-grid {
+  margin-top: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-metal-soft);
+  background: #151515;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 0.78rem;
+}
+
+.calendar-day-name {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.calendar-cell {
+  height: 40px;
+  border-radius: 8px;
+  background: #111111;
+}
+
+.calendar-cell-inner {
+  width: 100%;
+  height: 100%;
+  padding: 3px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.calendar-cell-number {
+  font-size: 0.8rem;
+  color: var(--text-main);
+}
+
+.calendar-cell-out .calendar-cell-number {
+  color: #4b5563;
+}
+
+.calendar-cell-today {
+  border: 1px solid var(--hi-vis-stripe);
+}
+
+.calendar-dots {
+  margin-top: 2px;
+  display: flex;
+  gap: 2px;
+}
+
+.calendar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+}
+
+.calendar-dot-upcoming {
+  background: var(--hi-vis-yellow);
+}
+
+.calendar-dot-overdue {
+  background: var(--status-overdue);
+}
+
+.calendar-dot-completed {
+  background: var(--status-completed);
+}
+
+.calendar-legend {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 10px;
+}
+
+.calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* =============== RESPONSIVE =============== */
+
+@media (max-width: 960px) {
+  .app-shell-root {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .page-grid,
+  .page-two-column {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell-root {
+    grid-template-columns: minmax(0, 1fr);
+    max-height: none;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-main-column {
+    padding: 10px;
+  }
+
+  .app-main-content {
+    padding: 8px;
+  }
+
+  .tf-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* =============== ADVANCED UI – FORM & TASKS =============== */
+
+/* Form advanced */
+
+.tf-form-advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tf-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tf-form-title-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tf-form-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #181818;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tf-form-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.tf-form-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.tf-form-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tf-form-summary-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+/* Priority chips */
+
+.tf-priority-chip,
+.task-priority-chip {
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border-metal-soft);
+}
+
+.tf-priority-1,
+.task-priority-1 {
+  border-color: var(--status-overdue);
+  color: var(--status-overdue);
+}
+
+.tf-priority-2,
+.task-priority-2 {
+  border-color: var(--hi-vis-stripe);
+  color: var(--hi-vis-yellow);
+}
+
+.tf-priority-3,
+.task-priority-3 {
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
+.tf-help {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.tf-footer-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tf-footer-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tf-footer-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--hi-vis-yellow);
+}
+
+/* Task card advanced */
+
+.task-card-subrow {
+  margin-top: 2px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.task-status-badge {
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.7rem;
+  border: 1px solid var(--border-metal-soft);
+  color: var(--text-muted);
+}
+
+/* Sections in TaskList */
+
+.task-section {
+  margin-bottom: 12px;
+}
+
+.task-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.task-section-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+.task-section-count {
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-metal-soft);
+}
+
+.task-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* ======= TASKS PAGE LAYOUT FIX ======= */
+
+
+.tasks-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tasks-column-left {
+  flex: 1.1;
+}
+
+.tasks-column-right {
+  flex: 1.4;
+  min-height: 0; /* ♥ esențial pentru scroll în interior */
+}
+
+.tasks-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* ♥ permite copiilor să devină scrollabili */
+}
+
+.tasks-list-card {
+  overflow: hidden; /* ♥ pregătește lista pentru scroll intern */
+}
+
+/* LISTA DE ACTIVITĂȚI – scroll intern corect */
+
+
+/* scrollbar industrial */
+.task-list-scroll::-webkit-scrollbar {
+  width: 7px;
+}
+
+.task-list-scroll::-webkit-scrollbar-thumb {
+  background: var(--hi-vis-stripe);
+  border-radius: 999px;
+}
+/* ======= TASKS PAGE LAYOUT – FIX SCROLL ======= */
+
+
+
+.tasks-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.tasks-column-left {
+  flex: 1.1;
+}
+
+.tasks-column-right {
+  flex: 1.4;
+  min-height: 0;      /* cheie ca lista să poată face scroll */
+}
+
+.tasks-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tasks-list-card {
+  overflow: hidden;   /* conținutul dinăuntru va scrola, nu cardul */
+}
+
+/* lista în sine */
+.task-list-scroll {
+  margin-top: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* scrollbar industrial */
+.task-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list-scroll::-webkit-scrollbar-thumb {
+  background: var(--hi-vis-stripe);
+  border-radius: 999px;
+}
+/* =============== FIX SCROLL LISTĂ TASK-URI =============== */
+/* Acest bloc suprascrie setările de mai sus, nu trebuie să ștergi nimic. */
+
+/* containerul principal al paginii */
+.app-main-content {
+  flex: 1;
+  min-height: 0;
+  border-radius: 18px;
+  background: #101010;
+  border: 1px solid var(--border-metal-soft);
+  padding: 10px;
+  overflow: hidden;          /* aici blocăm overflow-ul mare */
+  display: flex;
+  flex-direction: column;
+}
+
+/* layout pentru pagina de Tasks */
+.tasks-layout {
+  display: flex;
+  gap: 16px;
+  height: 100%;              /* ocupă toată înălțimea disponibilă */
+  min-height: 0;             /* permite scroll la copii */
+}
+
+/* coloane stânga/dreapta */
+.tasks-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.tasks-column-left {
+  flex: 1.1;
+}
+
+.tasks-column-right {
+  flex: 1.4;
+  min-height: 0;             /* esențial pentru scroll în interior */
+}
+
+/* cardurile din Tasks (formular + listă) */
+.tasks-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tasks-list-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;          /* lista dinăuntru va scrola */
+}
+
+/* LISTA DE ACTIVITĂȚI – scroll intern corect */
+.task-list-scroll {
+  margin-top: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;          /* scroll vertical */
+  overflow-x: hidden;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* scrollbar industrial */
+.task-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list-scroll::-webkit-scrollbar-thumb {
+  background: var(--hi-vis-stripe);
+  border-radius: 999px;
+}

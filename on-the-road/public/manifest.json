@@ -1,0 +1,9 @@
+{
+  "name": "Lista Activitati SOPM",
+  "short_name": "SOPM",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "start_url": "/",
+  "icons": []
+}

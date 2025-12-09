@@ -1,0 +1,82 @@
+import { useContext, useMemo } from "react";
+import { TasksContext } from "../context/TasksContext";
+import TaskItem from "./TaskItem";
+
+export default function TaskList() {
+  const { tasks } = useContext(TasksContext);
+
+  const groups = useMemo(() => {
+    const g = {
+      overdue: [],
+      upcoming: [],
+      completed: [],
+      canceled: [],
+    };
+
+    for (const t of tasks) {
+      if (g[t.status]) g[t.status].push(t);
+    }
+
+    return g;
+  }, [tasks]);
+
+  const isEmpty =
+    !tasks || (!tasks.length && Object.values(groups).every((arr) => !arr.length));
+
+  if (isEmpty) {
+    return (
+      <div className="task-empty-state">
+        <div className="task-empty-icon">📋</div>
+        <h3 className="task-empty-title">Nicio activitate</h3>
+        <p className="task-empty-text">
+          Adaugă o nouă activitate folosind formularul din stânga. Va fi
+          încadrată automat în secțiunea corespunzătoare.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="task-list-scroll">
+      <TaskSection
+        title="Restante"
+        code="overdue"
+        tasks={groups.overdue}
+      />
+      <TaskSection
+        title="Urmează"
+        code="upcoming"
+        tasks={groups.upcoming}
+      />
+      <TaskSection
+        title="Completate"
+        code="completed"
+        tasks={groups.completed}
+      />
+      <TaskSection
+        title="Anulate"
+        code="canceled"
+        tasks={groups.canceled}
+      />
+    </div>
+  );
+}
+
+function TaskSection({ title, code, tasks }) {
+  if (!tasks || !tasks.length) return null;
+
+  return (
+    <section className={`task-section task-section-${code}`}>
+      <header className="task-section-header">
+        <span className="task-section-title">{title}</span>
+        <span className="task-section-count">{tasks.length}</span>
+      </header>
+
+      <div className="task-section-body">
+        {tasks.map((t) => (
+          <TaskItem key={t.id} task={t} />
+        ))}
+      </div>
+    </section>
+  );
+}
