@@ -8,93 +8,57 @@ import {
 
 export const TasksContext = createContext();
 
-function isOverdue(task) {
-  if (!task.date) return false;
-  if (task.status === "completed" || task.status === "canceled") return false;
-
-  const now = new Date();
-  const taskDate = new Date(task.date);
-
-  if (Number.isNaN(taskDate.getTime())) return false;
-
-  return taskDate < now;
-}
-
 export function TasksProvider({ children }) {
   const [tasks, setTasks] = useState([]);
 
-  // 🔹 Load initial tasks
   useEffect(() => {
     async function fetchData() {
       const data = await loadTasks();
-
-      // recalculăm overdue la pornire
-      const normalized = data.map((task) => {
-        if (isOverdue(task)) {
-          return { ...task, status: "overdue" };
-        }
-        return task;
-      });
-
-      setTasks(normalized);
+      setTasks(data);
     }
-
     fetchData();
   }, []);
 
-  // 🔹 Revalidează periodic statusul (overdue)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTasks((prev) =>
-        prev.map((task) => {
-          if (isOverdue(task) && task.status !== "overdue") {
-            updateTaskStatus(task.id, "overdue");
-            return { ...task, status: "overdue" };
-          }
-          return task;
-        })
-      );
-    }, 60 * 1000); // la fiecare minut
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // 🔹 Add task
   const addTask = useCallback(async (task) => {
-    const finalTask = {
-      ...task,
-      status: isOverdue(task) ? "overdue" : task.status ?? "upcoming",
-    };
-
+    const finalTask = { ...task, status: task.status ?? "upcoming" };
     const id = await addTaskToDB(finalTask);
     setTasks((prev) => [...prev, { ...finalTask, id }]);
   }, []);
 
-  // 🔹 Delete task
   const deleteTask = useCallback(async (id) => {
-    await deleteTaskFromDB(id);
-    setTasks((prev) => prev.filter((task) => task.id !== id));
-  }, []);
+    // optimist
+    const prevTasks = tasks;
+    setTasks((prev) => prev.filter((t) => t.id !== id));
 
-  // 🔹 Update status (manual)
+    try {
+      await deleteTaskFromDB(id);
+    } catch (err) {
+      console.error("deleteTaskFromDB failed:", err);
+      setTasks(prevTasks); // rollback
+    }
+  }, [tasks]);
+
   const updateStatus = useCallback(async (id, newStatus) => {
-    await updateTaskStatus(id, newStatus);
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, status: newStatus } : task
-      )
-    );
+    // 1) Update UI imediat (optimist)
+    let before;
+    setTasks((prev) => {
+      before = prev;
+      return prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t));
+    });
+
+    // 2) Persistă în Firestore
+    try {
+      await updateTaskStatus(id, newStatus);
+    } catch (err) {
+      console.error("updateTaskStatus failed:", err);
+      // 3) rollback dacă Firestore a eșuat
+      if (before) setTasks(before);
+      alert("Nu pot salva statusul (Firestore). Verifică Rules/permisiuni.");
+    }
   }, []);
 
   return (
-    <TasksContext.Provider
-      value={{
-        tasks,
-        addTask,
-        deleteTask,
-        updateStatus,
-      }}
-    >
+    <TasksContext.Provider value={{ tasks, addTask, deleteTask, updateStatus }}>
       {children}
     </TasksContext.Provider>
   );

@@ -16,6 +16,7 @@ export default function AppShell() {
 
   const { tasks } = useContext(TasksContext);
 
+  // 🔹 STATISTICI CENTRALE (SURSĂ UNICĂ)
   const stats = useMemo(() => {
     const s = {
       total: tasks.length,
@@ -31,6 +32,7 @@ export default function AppShell() {
       if (t.status === "completed") s.completed++;
       if (t.status === "canceled") s.canceled++;
     }
+
     return s;
   }, [tasks]);
 
@@ -41,7 +43,7 @@ export default function AppShell() {
       <div className="app-orbit-layer app-orbit-layer-3" />
 
       <div className="app-shell-root">
-        {/* --- SIDEBAR --- */}
+        {/* ================= SIDEBAR ================= */}
         <aside
           className={
             sidebarCollapsed
@@ -49,6 +51,7 @@ export default function AppShell() {
               : "app-sidebar"
           }
         >
+          {/* HEADER */}
           <div className="sidebar-header">
             <button
               className="sidebar-logo-pill"
@@ -68,6 +71,7 @@ export default function AppShell() {
             </button>
           </div>
 
+          {/* NAV */}
           <nav className="sidebar-nav">
             <NavPill
               label="Acasă"
@@ -92,10 +96,10 @@ export default function AppShell() {
               active={activePage === PAGES.CALENDAR}
               onClick={() => setActivePage(PAGES.CALENDAR)}
               collapsed={sidebarCollapsed}
-              badge={stats.upcoming}
-            />
+              />
           </nav>
 
+          {/* FOOTER – STATUS ACTIVITĂȚI */}
           {!sidebarCollapsed && (
             <div className="sidebar-footer">
               <p className="sidebar-footer-title">Status activități</p>
@@ -120,12 +124,20 @@ export default function AppShell() {
                   {stats.completed}
                 </span>
               </div>
+
+              <div className="sidebar-footer-row">
+                <span>Anulate</span>
+                <span className="sidebar-footer-pill sidebar-footer-pill-canceled">
+                  {stats.canceled}
+                </span>
+              </div>
             </div>
           )}
         </aside>
 
-        {/* --- MAIN CONTENT --- */}
+        {/* ================= MAIN ================= */}
         <div className="app-main-column">
+          {/* TOPBAR */}
           <header className="app-topbar">
             <div className="topbar-left">
               <h1 className="topbar-title">
@@ -146,6 +158,7 @@ export default function AppShell() {
             </div>
           </header>
 
+          {/* CONTENT */}
           <main className="app-main-content">
             <PageTransition key={activePage}>
               {activePage === PAGES.HOME && <HomePage stats={stats} />}
@@ -159,7 +172,7 @@ export default function AppShell() {
   );
 }
 
-/* --- HELPER COMPONENTS --- */
+/* ================= HELPER COMPONENTS ================= */
 
 function NavPill({ label, icon, active, onClick, collapsed, badge }) {
   return (
@@ -172,9 +185,7 @@ function NavPill({ label, icon, active, onClick, collapsed, badge }) {
       {!collapsed && (
         <>
           <span className="nav-pill-label">{label}</span>
-          {badge > 0 && (
-            <span className="nav-pill-badge">{badge}</span>
-          )}
+          {badge > 0 && <span className="nav-pill-badge">{badge}</span>}
         </>
       )}
     </button>
