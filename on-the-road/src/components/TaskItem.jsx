@@ -5,38 +5,34 @@ export default function TaskItem({ task }) {
   const { deleteTask, updateStatus } = useContext(TasksContext);
 
   const statusLabel = useMemo(() => {
-    switch (task.status) {
-      case "overdue":
-        return "Restant";
-      case "upcoming":
-        return "Urmează";
-      case "completed":
-        return "Complet";
-      case "canceled":
-        return "Anulat";
-      default:
-        return task.status;
-    }
+    const map = {
+      overdue: "Restant",
+      upcoming: "Urmează",
+      completed: "Complet",
+      canceled: "Anulat",
+    };
+    return map[task.status] ?? task.status;
   }, [task.status]);
 
   const priorityLabel = useMemo(() => {
-    switch (task.priority) {
-      case 1:
-        return "Importantă";
-      case 3:
-        return "Scăzută";
-      default:
-        return "Mediu";
-    }
+    const map = {
+      1: "Importantă",
+      2: "Mediu",
+      3: "Scăzută",
+    };
+    return map[task.priority] ?? "Mediu";
   }, [task.priority]);
 
   const formattedDate = useMemo(() => {
-    if (!task.date) return "";
+    if (!task.date) return "—";
+
     const d = new Date(task.date);
     if (Number.isNaN(d.getTime())) return task.date;
+
     return d.toLocaleString("ro-RO", {
       day: "2-digit",
       month: "short",
+      year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -74,7 +70,9 @@ export default function TaskItem({ task }) {
         </div>
         <div className="task-card-meta-item">
           <span className="task-card-meta-label">Prioritate</span>
-          <span className="task-card-meta-value">#{task.priority}</span>
+          <span className="task-card-meta-value">
+            #{task.priority ?? 2}
+          </span>
         </div>
       </div>
 

@@ -2,8 +2,12 @@ import { useContext, useMemo } from "react";
 import { TasksContext } from "../context/TasksContext";
 import TaskItem from "./TaskItem";
 
-export default function TaskList() {
-  const { tasks } = useContext(TasksContext);
+export default function TaskList({ tasks: tasksProp }) {
+  const { tasks: contextTasks } = useContext(TasksContext);
+
+  // dacă primim tasks ca prop → le folosim pe acelea
+  // altfel → folosim contextul (comportamentul vechi)
+  const tasks = tasksProp ?? contextTasks ?? [];
 
   const groups = useMemo(() => {
     const g = {
@@ -14,14 +18,17 @@ export default function TaskList() {
     };
 
     for (const t of tasks) {
-      if (g[t.status]) g[t.status].push(t);
+      if (g[t.status]) {
+        g[t.status].push(t);
+      }
     }
 
     return g;
   }, [tasks]);
 
   const isEmpty =
-    !tasks || (!tasks.length && Object.values(groups).every((arr) => !arr.length));
+    !tasks.length ||
+    Object.values(groups).every((arr) => arr.length === 0);
 
   if (isEmpty) {
     return (
@@ -29,8 +36,7 @@ export default function TaskList() {
         <div className="task-empty-icon">📋</div>
         <h3 className="task-empty-title">Nicio activitate</h3>
         <p className="task-empty-text">
-          Adaugă o nouă activitate folosind formularul din stânga. Va fi
-          încadrată automat în secțiunea corespunzătoare.
+          Nu există activități pentru selecția curentă.
         </p>
       </div>
     );
@@ -38,32 +44,16 @@ export default function TaskList() {
 
   return (
     <div className="task-list-scroll">
-      <TaskSection
-        title="Restante"
-        code="overdue"
-        tasks={groups.overdue}
-      />
-      <TaskSection
-        title="Urmează"
-        code="upcoming"
-        tasks={groups.upcoming}
-      />
-      <TaskSection
-        title="Completate"
-        code="completed"
-        tasks={groups.completed}
-      />
-      <TaskSection
-        title="Anulate"
-        code="canceled"
-        tasks={groups.canceled}
-      />
+      <TaskSection title="Restante" code="overdue" tasks={groups.overdue} />
+      <TaskSection title="Urmează" code="upcoming" tasks={groups.upcoming} />
+      <TaskSection title="Completate" code="completed" tasks={groups.completed} />
+      <TaskSection title="Anulate" code="canceled" tasks={groups.canceled} />
     </div>
   );
 }
 
 function TaskSection({ title, code, tasks }) {
-  if (!tasks || !tasks.length) return null;
+  if (!tasks.length) return null;
 
   return (
     <section className={`task-section task-section-${code}`}>

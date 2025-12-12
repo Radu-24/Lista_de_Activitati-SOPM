@@ -1365,3 +1365,82 @@ body {
   background: var(--hi-vis-stripe);
   border-radius: 999px;
 }
+/* =========================================================
+   CALENDAR – FIX SCROLL TASK-URI (PATCH SIGUR)
+   ========================================================= */
+
+/* card calendar trebuie să permită flex intern */
+.page-card-calendar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* zona de sub calendar */
+.calendar-day-tasks {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* DOAR lista de task-uri scrollează */
+.calendar-day-tasks-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+}
+
+/* scrollbar – stil deja existent, doar reutilizat */
+.calendar-day-tasks-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.calendar-day-tasks-scroll::-webkit-scrollbar-thumb {
+  background: var(--hi-vis-stripe);
+  border-radius: 999px;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* Calendar -> Task list spacing tighter */
+.calendar-day-tasks {
+  margin-top: 6px;      /* era ~14px; coboară-l la 6px (poți pune 4px) */
+  gap: 6px;             /* distanța internă între titlu și listă */
+}
+
+/* Elimină margin implicit pe titlu (dacă există) */
+.calendar-day-tasks h3 {
+  margin: 0;
+  padding: 0;
+}
+/* Make Calendar card a controlled vertical flex layout */
+.page-card-calendar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Calendar parts shouldn't stretch */
+.calendar-header,
+.calendar-grid,
+.calendar-legend {
+  flex-shrink: 0;
+}
+
+/* Task area gets MORE space */
+.calendar-day-tasks {
+  flex: 3;              /* crește zona (încearcă 2.5 / 3 / 4) */
+  min-height: 0;
+}
+
+/* Scroll only inside tasks list */
+.calendar-day-tasks-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
